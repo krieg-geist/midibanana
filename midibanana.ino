@@ -18,9 +18,35 @@ MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 const uint8_t LOW_C = 48;
 bool octave = false;
 
-// Define the notes of a major scale
-const uint8_t MAJOR_SCALE[] = {0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 18};
+// Define scale types
+const uint8_t MAJOR_SCALE[] = {0, 2, 4, 5, 7, 9, 11, 12};
+const uint8_t MINOR_SCALE[] = {0, 2, 3, 5, 7, 8, 10, 12};
+const uint8_t CHROMATIC_SCALE[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
+
+// Enum to select scale type
+enum ScaleType {
+    MAJOR,
+    MINOR,
+    CHROMATIC
+};
+
+// Current scale type
+ScaleType currentScale = MAJOR;
+
+// Function to get the note offset based on scale type and position
+uint8_t getNoteOffset(uint8_t position) {
+    switch(currentScale) {
+        case MAJOR:
+            return MAJOR_SCALE[position % (sizeof(MAJOR_SCALE) / sizeof(MAJOR_SCALE[0]))];
+        case MINOR:
+            return MINOR_SCALE[position % (sizeof(MINOR_SCALE) / sizeof(MINOR_SCALE[0]))];
+        case CHROMATIC:
+            return CHROMATIC_SCALE[position % (sizeof(CHROMATIC_SCALE) / sizeof(CHROMATIC_SCALE[0]))];
+        default:
+            return 0; // Default to 0 if no scale matches
+    }
+}
 // Initialize capacitive touch sensor
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
@@ -34,7 +60,7 @@ void setup() {
     TinyUSB_Device_Init(0);
   #endif
 
-  // Set product descriptor for the USB device
+  // Set a name for the USB device
   TinyUSBDevice.setProductDescriptor("MIDI BANANA");
 
   // Configure I2C pins
@@ -44,7 +70,7 @@ void setup() {
   // Set octave switch pin as input with pull-up
   pinMode(OCTAVE_SWITCH, INPUT_PULLUP);
     
-  // Initialize MPR121 with default or specified address
+  // Initialize MPR121 with default address
   if (!cap.begin(0x5A)) {
     while (1); // Hang if initialization fails
   }
@@ -59,12 +85,12 @@ void setup() {
 
 void handleNoteOn(uint16_t banana) {
   // Send MIDI note on message
-  MIDI.sendNoteOn(LOW_C + MAJOR_SCALE[banana] + (octave * 12), 127, 1);
+  MIDI.sendNoteOn(LOW_C + getNoteOffset(banana) + (octave * 12), 127, 1);
 }
 
 void handleNoteOff(uint16_t banana) {
   // Send MIDI note off message
-  MIDI.sendNoteOff(LOW_C + MAJOR_SCALE[banana] + (octave * 12), 127, 1);
+  MIDI.sendNoteOff(LOW_C + getNoteOffset(banana) + (octave * 12), 127, 1);
 }
 
 void loop() {
