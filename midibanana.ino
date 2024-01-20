@@ -97,7 +97,7 @@ void loop() {
   // Check for octave switch changes
   if (digitalRead(OCTAVE_SWITCH) != octave) {
     octave = !octave;
-    MIDI.sendControlChange(123, 0, 1); // Send a MIDI control change
+    MIDI.sendControlChange(123, 0, 1); // Kill all the notes currently playing so we don't accidentally leave them hanging..
   }
 
   // Get the currently touched pads
