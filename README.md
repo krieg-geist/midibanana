@@ -36,14 +36,15 @@ This project transforms everyday fruits into a playful and interactive MIDI inst
 ### Software Configuration
 
 1. Install the required libraries (`Adafruit_MPR121`, `Adafruit_TinyUSB`, `MIDI`) in the Arduino IDE.
-2. Load the provided code onto your microcontroller.
-3. If using a MIDI to USB interface, connect the microcontroller to the MIDI device.
+2. Load the provided code onto your microcontroller. 
+3. If using a MIDI to USB interface, connect the microcontroller to the MIDI device. Be sure to select `Adafruit TinyUSB` under Tools > USB stack
+4. If you can't get it to upload, unplug the usb, then plug it back in while holding down the boot button (may be a different button depending on the model of RP2040)
 
 ## Usage
 
 - Touching each fruit will send a MIDI note corresponding to its position in the selected musical scale (Major, Minor, or Chromatic).
 - The octave can be changed using a designated switch attached to the microcontroller.
-- The code allows for easy switching between different musical scales.
+- The scale can be changed using a designated switch attached to the microcontroller.
 
 ## Code Structure
 
