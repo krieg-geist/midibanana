@@ -15,6 +15,8 @@ MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 
 // Define constants for octave switching
 #define OCTAVE_SWITCH 14
+#define SCALE_SWITCH 15
+
 const uint8_t LOW_C = 48;
 bool octave = false;
 
@@ -25,10 +27,11 @@ const uint8_t CHROMATIC_SCALE[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 
 // Enum to select scale type
+// An Enum maps variable names to ascending numbers, 0, 1, 2, etc.
 enum ScaleType {
-    MAJOR,
-    MINOR,
-    CHROMATIC
+  CHROMATIC,
+  MAJOR,
+  MINOR
 };
 
 // Current scale type
@@ -97,6 +100,13 @@ void loop() {
   // Check for octave switch changes
   if (digitalRead(OCTAVE_SWITCH) != octave) {
     octave = !octave;
+    MIDI.sendControlChange(123, 0, 1); // Kill all the notes currently playing so we don't accidentally leave them hanging..
+  }
+
+  // Check for scale switch changes
+  auto scale = digitalRead(SCALE_SWITCH);
+  if (scale != currentScale) {
+    currentScale = scale; // since this is a digital read, we'll only get 0 or 1 (chromatic or major)
     MIDI.sendControlChange(123, 0, 1); // Kill all the notes currently playing so we don't accidentally leave them hanging..
   }
 

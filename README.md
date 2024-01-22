@@ -27,9 +27,11 @@ This project transforms everyday fruits into a playful and interactive MIDI inst
 
 ### Hardware Connections
 
-1. Connect the MPR121 sensor to your microcontroller using I2C (SDA to SDA, SCL to SCL).
+1. Connect the MPR121 sensor to your microcontroller using I2C (SDA to 16, SCL to 17).
 2. Connect the ground and VCC of the MPR121 to the microcontroller.
 3. Attach each fruit to one of the 12 capacitive touch inputs on the MPR121.
+4. Connect the center pin of the octave switch to 14 and the center pin of the scale switch to 15
+5. Connect one of the pins of each switch to ground
 
 ### Software Configuration
 
