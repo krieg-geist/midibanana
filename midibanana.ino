@@ -104,6 +104,8 @@ void loop() {
   }
 
   // Check for scale switch changes
+
+  // We'd ideally want to have this be a button instead of a switch so we could cycle through the possible scales but this will have to do for now
   auto scale = digitalRead(SCALE_SWITCH);
   if (scale == LOW && currentScale != CHROMATIC) {
     currentScale = CHROMATIC;
