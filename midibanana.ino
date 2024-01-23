@@ -15,7 +15,7 @@ MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 
 // Define constants for octave switching
 #define OCTAVE_SWITCH 14
-#define SCALE_SWITCH 15
+#define SCALE_BUTTON 15
 
 const uint8_t LOW_C = 48;
 bool octave = false;
@@ -31,11 +31,16 @@ const uint8_t CHROMATIC_SCALE[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 enum ScaleType {
   CHROMATIC,
   MAJOR,
-  MINOR
+  MINOR,
+  NUM_SCALES // This is used to know the number of scale types
 };
 
 // Current scale type
 ScaleType currentScale = MAJOR;
+
+// Last time the switch was toggled
+unsigned long lastSwitchTime = 0;
+const unsigned long debounceDelay = 50; // 50 milliseconds debounce delay
 
 // Function to get the note offset based on scale type and position
 uint8_t getNoteOffset(uint8_t position) {
@@ -104,15 +109,15 @@ void loop() {
   }
 
   // Check for scale switch changes
+  unsigned long currentTime = millis(); // get the time right now
+  if (digitalRead(SCALE_BUTTON) == HIGH && currentTime - lastSwitchTime > debounceDelay) {
+      lastSwitchTime = currentTime; // Update the last switch time
 
-  // We'd ideally want to have this be a button instead of a switch so we could cycle through the possible scales but this will have to do for now
-  auto scale = digitalRead(SCALE_SWITCH);
-  if (scale == LOW && currentScale != CHROMATIC) {
-    currentScale = CHROMATIC;
-    MIDI.sendControlChange(123, 0, 1); // Kill all the notes
-  } else if (scale == HIGH && currentScale != MAJOR) {
-    currentScale = MAJOR;
-    MIDI.sendControlChange(123, 0, 1); // Kill all the notes
+      // Cycle through the scale types
+      currentScale = static_cast<ScaleType>((currentScale + 1) % NUM_SCALES);
+      
+      // Send MIDI control change to kill all notes
+      MIDI.sendControlChange(123, 0, 1);
   }
 
   // Get the currently touched pads

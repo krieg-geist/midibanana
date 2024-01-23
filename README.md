@@ -15,6 +15,8 @@ This project transforms everyday fruits into a playful and interactive MIDI inst
 - 12 pieces of conductive material (fruits like bananas, apples, etc.)
 - Jumper wires
 - USB cable for USB MIDI
+- A spdt or spst switch (optional, for switching octave)
+- A button (optional, for cycling scales)
 
 ### Software
 
@@ -30,8 +32,8 @@ This project transforms everyday fruits into a playful and interactive MIDI inst
 1. Connect the MPR121 sensor to your microcontroller using I2C (SDA to 16, SCL to 17).
 2. Connect the ground and VCC of the MPR121 to the microcontroller.
 3. Attach each fruit to one of the 12 capacitive touch inputs on the MPR121.
-4. Connect the center pin of the octave switch to 14 and the center pin of the scale switch to 15
-5. Connect one of the pins of each switch to ground
+4. Connect the center pin of the octave switch to 14 and one of the pins of each switch to ground
+6. Connect one side of the scale button to 15 and the other side to ground
 
 ### Software Configuration
 
