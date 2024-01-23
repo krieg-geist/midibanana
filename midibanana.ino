@@ -105,9 +105,12 @@ void loop() {
 
   // Check for scale switch changes
   auto scale = digitalRead(SCALE_SWITCH);
-  if (scale != currentScale) {
-    currentScale = scale; // since this is a digital read, we'll only get 0 or 1 (chromatic or major)
-    MIDI.sendControlChange(123, 0, 1); // Kill all the notes currently playing so we don't accidentally leave them hanging..
+  if (scale == LOW && currentScale != CHROMATIC) {
+    currentScale = CHROMATIC;
+    MIDI.sendControlChange(123, 0, 1); // Kill all the notes
+  } else if (scale == HIGH && currentScale != MAJOR) {
+    currentScale = MAJOR;
+    MIDI.sendControlChange(123, 0, 1); // Kill all the notes
   }
 
   // Get the currently touched pads
