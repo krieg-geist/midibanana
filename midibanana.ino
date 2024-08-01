@@ -17,6 +17,13 @@ MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 #define OCTAVE_SWITCH 14
 #define SCALE_BUTTON 15
 
+#define PIN_SDA 16
+#define PIN_SCL 17
+
+// This will calibrate the MPR121 to ambient levels so it's IMPORTANT you reset
+// it after clipping / unclipping your fruits
+#define AUTOCONFIG
+
 const uint8_t LOW_C = 48;
 bool octave = false;
 
@@ -36,7 +43,7 @@ enum ScaleType {
 };
 
 // Current scale type
-ScaleType currentScale = MAJOR;
+ScaleType currentScale = CHROMATIC;
 
 // Last time the switch was toggled
 unsigned long lastSwitchTime = 0;
@@ -55,6 +62,7 @@ uint8_t getNoteOffset(uint8_t position) {
             return 0; // Default to 0 if no scale matches
     }
 }
+
 // Initialize capacitive touch sensor
 Adafruit_MPR121 cap = Adafruit_MPR121();
 
@@ -72,23 +80,23 @@ void setup() {
   TinyUSBDevice.setProductDescriptor("MIDI BANANA");
 
   // Configure I2C pins
-  Wire.setSDA(16);
-  Wire.setSCL(17);
+  Wire.setSDA(PIN_SDA);
+  Wire.setSCL(PIN_SCL);
 
   // Set octave switch pin as input with pull-up
   pinMode(OCTAVE_SWITCH, INPUT_PULLUP);
-    
-  // Initialize MPR121 with default address
-  if (!cap.begin(0x5A)) {
-    while (1); // Hang if initialization fails
-  }
 
   // Initialize Serial and MIDI communication
-  Serial.begin(115200);
+  // CAN'T DO BOTH OVER USB :<
+  // Serial.begin(115200);
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
   // Wait until the USB device is mounted
   while (!TinyUSBDevice.mounted()) delay(1);
+  // Initialize MPR121 with default address
+  if (!cap.begin(0x5A)) {
+    while (1); // Hang if initialization fails
+  }
 }
 
 void handleNoteOn(uint16_t banana) {
